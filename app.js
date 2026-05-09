@@ -80,8 +80,112 @@ function setHighlight(id, value, change) {
 }
 
 // ─────────────────────────────────────────────
-// CÂMBIO — AwesomeAPI
+// ÍNDICES GLOBAIS — Brapi.dev (Yahoo Finance)
 // ─────────────────────────────────────────────
+
+const INDICES = {
+  americas: [
+    { ticker: '^BVSP',  nome: 'Ibovespa',     pais: '🇧🇷 Brasil'    },
+    { ticker: '^GSPC',  nome: 'S&P 500',       pais: '🇺🇸 EUA'       },
+    { ticker: '^DJI',   nome: 'Dow Jones',     pais: '🇺🇸 EUA'       },
+    { ticker: '^IXIC',  nome: 'Nasdaq',        pais: '🇺🇸 EUA'       },
+    { ticker: '^RUT',   nome: 'Russell 2000',  pais: '🇺🇸 EUA'       },
+    { ticker: '^VIX',   nome: 'VIX',           pais: '🇺🇸 Volatil.'  },
+    { ticker: '^MXX',   nome: 'IPC México',    pais: '🇲🇽 México'    },
+    { ticker: '^IPSA',  nome: 'IPSA',          pais: '🇨🇱 Chile'     },
+    { ticker: '^MERV',  nome: 'MERVAL',        pais: '🇦🇷 Argentina' },
+  ],
+  europa: [
+    { ticker: '^FTSE',  nome: 'FTSE 100',      pais: '🇬🇧 Reino Unido' },
+    { ticker: '^GDAXI', nome: 'DAX',           pais: '🇩🇪 Alemanha'    },
+    { ticker: '^FCHI',  nome: 'CAC 40',        pais: '🇫🇷 França'      },
+    { ticker: '^STOXX50E', nome: 'Euro Stoxx 50', pais: '🇪🇺 Europa'  },
+    { ticker: '^IBEX',  nome: 'IBEX 35',       pais: '🇪🇸 Espanha'    },
+    { ticker: '^SSMI',  nome: 'SMI',           pais: '🇨🇭 Suíça'      },
+    { ticker: 'FTSEMIB.MI', nome: 'FTSE MIB', pais: '🇮🇹 Itália'     },
+  ],
+  asia: [
+    { ticker: '^N225',  nome: 'Nikkei 225',    pais: '🇯🇵 Japão'       },
+    { ticker: '^HSI',   nome: 'Hang Seng',     pais: '🇭🇰 Hong Kong'   },
+    { ticker: '000001.SS', nome: 'Shanghai',   pais: '🇨🇳 China'       },
+    { ticker: '^KS11',  nome: 'KOSPI',         pais: '🇰🇷 Coreia Sul'  },
+    { ticker: '^TWII',  nome: 'TAIEX',         pais: '🇹🇼 Taiwan'      },
+    { ticker: '^STI',   nome: 'STI',           pais: '🇸🇬 Singapura'   },
+    { ticker: '^AXJO',  nome: 'ASX 200',       pais: '🇦🇺 Austrália'   },
+    { ticker: '^BSESN', nome: 'SENSEX',        pais: '🇮🇳 Índia'       },
+  ],
+};
+
+function buildIndicesRows(items, data) {
+  let rows = '';
+  for (const idx of items) {
+    const d = data.find(r => r.symbol === idx.ticker);
+    if (!d) {
+      rows += `<tr><td><strong>${idx.nome}</strong></td><td style="color:var(--text3)">${idx.pais}</td><td colspan="5" style="color:var(--text3)">Sem dados</td></tr>`;
+      continue;
+    }
+    const pct  = d.regularMarketChangePercent || 0;
+    const last = d.regularMarketPrice || 0;
+    const open = d.regularMarketOpen || 0;
+    const low  = d.regularMarketDayLow || 0;
+    const high = d.regularMarketDayHigh || 0;
+    const fmtN = (v) => v >= 1000
+      ? v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : v.toFixed(2).replace('.', ',');
+
+    rows += `<tr>
+      <td><strong>${idx.nome}</strong><span class="ticker-name">${idx.ticker}</span></td>
+      <td style="color:var(--text3)">${idx.pais}</td>
+      <td>${fmtN(last)}</td>
+      <td style="color:var(--text3)">${fmtN(open)}</td>
+      <td style="color:var(--text3)">${fmtN(low)}</td>
+      <td style="color:var(--text3)">${fmtN(high)}</td>
+      <td>${badge(pct)}</td>
+    </tr>`;
+  }
+  return rows;
+}
+
+async function loadIndices() {
+  try {
+    const allTickers = [
+      ...INDICES.americas,
+      ...INDICES.europa,
+      ...INDICES.asia,
+    ].map(i => i.ticker).join(',');
+
+    const url = `https://brapi.dev/api/quote/${encodeURIComponent(allTickers)}?token=${CONFIG.BRAPI_TOKEN}&fundamental=false`;
+    const res = await fetch(url);
+    const json = await res.json();
+    const data = json.results || [];
+
+    document.getElementById('tb-americas').innerHTML =
+      buildIndicesRows(INDICES.americas, data) || '<tr class="skeleton"><td colspan="7">Sem dados disponíveis.</td></tr>';
+    document.getElementById('tb-europa').innerHTML =
+      buildIndicesRows(INDICES.europa, data) || '<tr class="skeleton"><td colspan="7">Sem dados disponíveis.</td></tr>';
+    document.getElementById('tb-asia').innerHTML =
+      buildIndicesRows(INDICES.asia, data) || '<tr class="skeleton"><td colspan="7">Sem dados disponíveis.</td></tr>';
+
+    // Highlights Ibovespa e S&P 500
+    const ibov = data.find(r => r.symbol === '^BVSP');
+    const sp   = data.find(r => r.symbol === '^GSPC');
+    if (ibov) setHighlight('hc-ibov',
+      ibov.regularMarketPrice.toLocaleString('pt-BR', { maximumFractionDigits: 0 }),
+      ibov.regularMarketChangePercent);
+    if (sp) setHighlight('hc-sp500',
+      sp.regularMarketPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      sp.regularMarketChangePercent);
+
+  } catch (e) {
+    ['tb-americas','tb-europa','tb-asia'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = `<tr class="skeleton"><td colspan="7">Erro ao buscar índices. Verifique a conexão.</td></tr>`;
+    });
+    console.error('Erro índices:', e);
+  }
+}
+
+
 
 const PARES_CAMBIO = [
   { code: 'USD-BRL', nome: 'Dólar Americano',    flag: '🇺🇸' },
@@ -327,6 +431,7 @@ async function loadAll() {
   if (btn) btn.disabled = true;
 
   await Promise.allSettled([
+    loadIndices(),
     loadCambio(),
     loadEmergentes(),
     loadCripto(),
