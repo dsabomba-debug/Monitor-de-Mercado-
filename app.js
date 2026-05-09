@@ -8,7 +8,7 @@
 
 const CONFIG = {
   // 👇 Coloque seu token gratuito do https://brapi.dev aqui
-  BRAPI_TOKEN: 'demo',
+  BRAPI_TOKEN: 'nd4i7finkKbGgXCdNBwAtt',
 
   // Atualização automática (em milissegundos) — padrão: 60 segundos
   REFRESH_INTERVAL: 60000,
