@@ -56,18 +56,103 @@
         <div class="h-value">--</div>
         <div class="h-change">--</div>
       </div>
+      <div class="h-card" id="hc-ibov">
+        <div class="h-label">Ibovespa <span class="h-pair">IBOV</span></div>
+        <div class="h-value">--</div>
+        <div class="h-change">--</div>
+      </div>
+      <div class="h-card" id="hc-sp500">
+        <div class="h-label">S&amp;P 500 <span class="h-pair">SPX</span></div>
+        <div class="h-value">--</div>
+        <div class="h-change">--</div>
+      </div>
     </section>
 
     <!-- Tabs -->
     <div class="tabs-bar">
-      <button class="tab active" data-tab="cambio">Câmbio</button>
+      <button class="tab active" data-tab="indices">Índices Globais</button>
+      <button class="tab" data-tab="cambio">Câmbio</button>
       <button class="tab" data-tab="cripto">Cripto</button>
       <button class="tab" data-tab="acoes">Ações BR</button>
       <button class="tab" data-tab="emergentes">Emergentes</button>
     </div>
 
+    <!-- Índices Globais -->
+    <section class="tab-content active" id="tab-indices">
+
+      <div class="table-wrap" style="margin-bottom:1rem">
+        <div class="table-header">
+          <span class="table-title">Américas</span>
+          <span class="table-note">Fonte: Brapi.dev</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Índice</th>
+              <th>País</th>
+              <th>Último</th>
+              <th>Abertura</th>
+              <th>Mín</th>
+              <th>Máx</th>
+              <th>Var%</th>
+            </tr>
+          </thead>
+          <tbody id="tb-americas">
+            <tr class="skeleton"><td colspan="7">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap" style="margin-bottom:1rem">
+        <div class="table-header">
+          <span class="table-title">Europa</span>
+          <span class="table-note">Fonte: Brapi.dev</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Índice</th>
+              <th>País</th>
+              <th>Último</th>
+              <th>Abertura</th>
+              <th>Mín</th>
+              <th>Máx</th>
+              <th>Var%</th>
+            </tr>
+          </thead>
+          <tbody id="tb-europa">
+            <tr class="skeleton"><td colspan="7">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-header">
+          <span class="table-title">Ásia &amp; Oceania</span>
+          <span class="table-note">Fonte: Brapi.dev</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Índice</th>
+              <th>País</th>
+              <th>Último</th>
+              <th>Abertura</th>
+              <th>Mín</th>
+              <th>Máx</th>
+              <th>Var%</th>
+            </tr>
+          </thead>
+          <tbody id="tb-asia">
+            <tr class="skeleton"><td colspan="7">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
     <!-- Câmbio -->
-    <section class="tab-content active" id="tab-cambio">
+    <section class="tab-content" id="tab-cambio">
       <div class="table-wrap">
         <div class="table-header">
           <span class="table-title">Câmbio — Pares com Dólar</span>
